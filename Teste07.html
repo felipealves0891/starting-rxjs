@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste 07</title>
+    <style>
+      body{
+        background-color: #eeeeee;
+      }
+      .content {
+        width: min-content;
+        margin-top: 100px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .content input {
+        padding: 10px;
+        border-radius: 5px;
+        border: none;
+        box-shadow: 1px 1px 5px #050f3f;
+        margin-bottom: 5px;
+      }
+
+      .content ul {
+        max-height: 400px;
+        list-style: none;
+        padding: 0px;
+        text-align: center;
+        border-radius: 5px;
+        overflow-y: auto;
+      }
+      
+      .content ul li{
+        border-radius: 5px;
+        margin-bottom: 3px;
+        padding: 10px;
+        background-color: #050f3f;
+        color: #ffffff;
+      }
+
+    </style>
+  </head>
+  <body>
+    
+    <div class="content">
+      <input type="text" placeholder="Pais..." />
+      <ul></ul>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.6.3/rxjs.umd.min.js" integrity="sha512-JnZPWAckMDks0CCIeGznqEo7ifmYK7VowHq/NVFlSXGkwxv4OBCJFy7nouOtJZmVldHo7FQLIdeWTI55yyZc4Q==" crossorigin="anonymous"></script>
+    <script>
+      const { fromEvent, of, ajax: {ajax} } = rxjs
+      const { switchMap, map, pluck, debounceTime, catchError, distinctUntilChanged, startWith } = rxjs.operators
+
+      const input = fromEvent(document.querySelector('input'), 'input')
+      const ul = document.querySelector('ul')
+
+      const mostraResultados = res => {
+        ul.innerHTML = res.map(e => `<li>${e}</li>`).join('')
+      }
+
+      const buscaPaisesNaApi = termo => ajax(`https://restcountries.eu/rest/v2/name/${termo}?fields=name`).pipe(
+        pluck('response'),
+        map(res => res.map(e => e.name))
+      )
+
+      input.pipe(
+        debounceTime(300),
+        pluck('target', 'value'),
+        map(e => e.trim()),
+        distinctUntilChanged(),
+        switchMap(termo => {
+          if(!termo || termo.length < 3) return of([])
+          return buscaPaisesNaApi(termo)
+        }),
+        catchError((err, souce) => {
+          console.error(err)
+          return souce.pipe(
+            startWith([])
+          )
+        })
+      ).subscribe(mostraResultados)
+
+    </script>
+
+  </body>
+</html>

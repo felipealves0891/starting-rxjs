@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste 02</title>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.6.3/rxjs.umd.min.js" integrity="sha512-JnZPWAckMDks0CCIeGznqEo7ifmYK7VowHq/NVFlSXGkwxv4OBCJFy7nouOtJZmVldHo7FQLIdeWTI55yyZc4Q==" crossorigin="anonymous"></script>
+    <script>
+      const { Observable } = rxjs
+      
+      const observer = Observable.create((observer) => {
+          let i = 0
+          const interval = setInterval(() => {
+              console.log('executando')
+              observer.next(i++);
+          }, 1000)
+
+          return () => clearInterval(interval)
+      })
+
+      const subscribe = observer.subscribe(num => console.log("Observable", num))
+
+      setTimeout(() => {
+          subscribe.unsubscribe()
+      }, 5000);
+      
+    </script>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste 05</title>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.6.3/rxjs.umd.min.js" integrity="sha512-JnZPWAckMDks0CCIeGznqEo7ifmYK7VowHq/NVFlSXGkwxv4OBCJFy7nouOtJZmVldHo7FQLIdeWTI55yyZc4Q==" crossorigin="anonymous"></script>
+    <script>
+      
+      const { ReplaySubject } = rxjs
+
+      const sub = new ReplaySubject(4)
+      sub.next(1)
+      sub.next(2)
+      sub.next(3)
+      sub.next(4)
+
+      sub.subscribe({
+        next: num => console.log("Observable 1", num),
+        error: err => console.error(err),
+        complete: () => console.log("Complete")
+      })
+
+      sub.next(5)
+      sub.next(6)
+
+      sub.subscribe({
+        next: num => console.log("Observable 2", num),
+        error: err => console.error(err),
+        complete: () => console.log("Complete")
+      })
+
+    </script>
+  </body>
+</html>
